@@ -3,20 +3,792 @@
         xmlns:vm="using:KTachoStudio.UI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1240" d:DesignHeight="820"
         x:Class="KTachoStudio.UI.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="KTachoStudio.UI">
+        Icon="/Assets/brand-badge.jpg"
+        Title="K-Tacho Studio - TDI Lab Edition"
+        Background="{StaticResource BrandCanvasBrush}"
+        WindowStartupLocation="CenterScreen"
+        Width="1260" Height="840"
+        MinWidth="1050" MinHeight="680">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ========================================================= -->
+        <!-- TOP HARDWARE / CONNECTION BAR                             -->
+        <!-- ========================================================= -->
+        <Border Grid.Row="0"
+                Background="{StaticResource BrandSurfaceHeaderBrush}"
+                BorderBrush="{StaticResource BrandBorderBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="16,10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                
+                <!-- Brand / Logo Area -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <Border CornerRadius="20" ClipToBounds="True" Width="38" Height="38"
+                            BorderBrush="{StaticResource BrandElectricCyanBrush}" BorderThickness="1.5">
+                        <Image Source="/Assets/brand-badge.jpg" Stretch="UniformToFill" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="K-TACHO" FontWeight="Black" FontSize="17" Foreground="{StaticResource BrandTextPrimaryBrush}" />
+                            <TextBlock Text="STUDIO" FontWeight="Black" FontSize="17" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                        </StackPanel>
+                        <TextBlock Text="TDI LAB EDITION • EDC15 &amp; EDC16 WORKBENCH" 
+                                   FontSize="10" FontWeight="Bold" LetterSpacing="0.8" 
+                                   Foreground="{StaticResource BrandNeonLimeBrush}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Center Spacing -->
+                <Border Grid.Column="1" />
+
+                <!-- Hardware Connection Controls -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    
+                    <!-- Port Selector -->
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock Text="PORT:" VerticalAlignment="Center" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandTextMutedBrush}" />
+                        <ComboBox ItemsSource="{Binding AvailablePorts}" 
+                                  SelectedItem="{Binding SelectedPort}" 
+                                  Width="125" Height="32" 
+                                  Background="{StaticResource BrandSurfaceAltBrush}"
+                                  BorderBrush="{StaticResource BrandBorderBrush}" />
+                    </StackPanel>
+
+                    <!-- Baud Selector -->
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock Text="BAUD:" VerticalAlignment="Center" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandTextMutedBrush}" />
+                        <ComboBox ItemsSource="{Binding AvailableBauds}" 
+                                  SelectedItem="{Binding SelectedBaud}" 
+                                  Width="150" Height="32"
+                                  Background="{StaticResource BrandSurfaceAltBrush}"
+                                  BorderBrush="{StaticResource BrandBorderBrush}" />
+                    </StackPanel>
+
+                    <!-- Connect / Disconnect Toggle Button -->
+                    <Button Command="{Binding ToggleConnectionCommand}"
+                            Classes="primary" Height="32" Padding="14,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Ellipse Width="8" Height="8" Fill="#091018" />
+                            <TextBlock Text="CONNECT" FontWeight="Bold" FontSize="11" LetterSpacing="0.5" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Bench Voltage Pill -->
+                    <Border Background="{StaticResource BrandSurfaceAltBrush}"
+                            BorderBrush="{StaticResource BrandSuccessBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="10,6">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="⚡" FontSize="12" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                            <TextBlock Text="{Binding BatteryVoltage}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandSuccessBrush}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ========================================================= -->
+        <!-- MAIN APP BODY: SIDEBAR + WORKSPACE                        -->
+        <!-- ========================================================= -->
+        <Grid Grid.Row="1" ColumnDefinitions="230,*">
+
+            <!-- LEFT NAVIGATION RAIL -->
+            <Border Grid.Column="0"
+                    Background="{StaticResource BrandSurfaceBrush}"
+                    BorderBrush="{StaticResource BrandBorderBrush}"
+                    BorderThickness="0,0,1,0"
+                    Padding="12,16">
+                <Grid RowDefinitions="*,Auto">
+                    
+                    <!-- Navigation Buttons -->
+                    <StackPanel Grid.Row="0" Spacing="6">
+                        <TextBlock Text="WORKSTATION" FontSize="10" FontWeight="Bold" LetterSpacing="1"
+                                   Foreground="{StaticResource BrandTextMutedBrush}" Margin="8,0,0,8" />
+
+                        <RadioButton GroupName="NavTabs" Content="🚗  Overview"
+                                     IsChecked="True"
+                                     Command="{Binding SwitchTabCommand}" CommandParameter="0"
+                                     HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="6" />
+
+                        <RadioButton GroupName="NavTabs" Content="⚡  EDC15 / EDC16 Flash"
+                                     Command="{Binding SwitchTabCommand}" CommandParameter="1"
+                                     HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="6" />
+
+                        <RadioButton GroupName="NavTabs" Content="🛡️  Cluster &amp; Immo"
+                                     Command="{Binding SwitchTabCommand}" CommandParameter="2"
+                                     HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="6" />
+
+                        <RadioButton GroupName="NavTabs" Content="📈  Live Diag &amp; Scope"
+                                     Command="{Binding SwitchTabCommand}" CommandParameter="3"
+                                     HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="6" />
+
+                        <RadioButton GroupName="NavTabs" Content="🎛️  Comfort &amp; Modules"
+                                     Command="{Binding SwitchTabCommand}" CommandParameter="4"
+                                     HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="6" />
+
+                        <RadioButton GroupName="NavTabs" Content="📊  Hex &amp; K-Line Log"
+                                     Command="{Binding SwitchTabCommand}" CommandParameter="5"
+                                     HorizontalAlignment="Stretch" Padding="12,10" CornerRadius="6" />
+                    </StackPanel>
+
+                    <!-- Bottom Hardware Info Badge -->
+                    <Border Grid.Row="1" Background="{StaticResource BrandSurfaceAltBrush}"
+                            BorderBrush="{StaticResource BrandBorderBrush}" BorderThickness="1"
+                            CornerRadius="6" Padding="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="HARDWARE INTERFACE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandTextMutedBrush}" />
+                            <TextBlock Text="FTDI FT232R KKL (Direct)" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                            <TextBlock Text="K-Line Latency: 2.1 ms" FontSize="10" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- WORKSPACE (TAB CONTROL TIED TO SelectedTabIndex) -->
+            <TabControl Grid.Column="1"
+                        SelectedIndex="{Binding SelectedTabIndex}"
+                        Background="Transparent">
+                <TabControl.Styles>
+                    <Style Selector="TabItem">
+                        <Setter Property="IsVisible" Value="False" />
+                    </Style>
+                </TabControl.Styles>
+
+                <!-- ================================================= -->
+                <!-- TAB 0: OVERVIEW / DASHBOARD                       -->
+                <!-- ================================================= -->
+                <TabItem>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20" Spacing="16">
+                            
+                            <!-- Top Summary Banner -->
+                            <Border Classes="card" Background="{StaticResource BrandSurfaceBrush}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="CONNECTED VEHICLE &amp; ECU IDENTIFICATION" Classes="header" />
+                                        <TextBlock Text="Automatic controller interrogation over K-Line via KW1281 / KWP2000" Classes="muted" />
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="{StaticResource BrandSurfaceAltBrush}"
+                                            BorderBrush="{StaticResource BrandElectricCyanBrush}" BorderThickness="1"
+                                            CornerRadius="6" Padding="12,6" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SecurityAccessStatus}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Identified Controller Data Grid -->
+                            <Grid ColumnDefinitions="*,*">
+                                
+                                <!-- Left Card: ECU Ident -->
+                                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="Engine Control Module (Address 01)" Classes="header" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                        
+                                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="140,*">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Part Number:" Classes="muted" Margin="0,4" />
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ControllerPartNumber}" FontWeight="Bold" Margin="0,4" />
+
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Component:" Classes="muted" Margin="0,4" />
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ControllerComponent}" FontWeight="Bold" Margin="0,4" />
+
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Software Coding:" Classes="muted" Margin="0,4" />
+                                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ControllerCoding}" FontWeight="Bold" Margin="0,4" />
+
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Workshop Code:" Classes="muted" Margin="0,4" />
+                                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ControllerWsc}" FontWeight="Bold" Margin="0,4" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Right Card: Immobilizer & Security -->
+                                <Border Grid.Column="1" Classes="card" Margin="8,0,0,0">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="Immobilizer &amp; Security Data" Classes="header" Foreground="{StaticResource BrandNeonLimeBrush}" />
+
+                                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="140,*">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Vehicle VIN:" Classes="muted" Margin="0,4" />
+                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ControllerVin}" FontWeight="Bold" Margin="0,4" />
+
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Immo Secret PIN:" Classes="muted" Margin="0,4" />
+                                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="0,4">
+                                                <TextBlock Text="{Binding ClusterPin}" FontWeight="Black" FontSize="14" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                                <Button Content="COPY" Classes="secondary" Padding="6,2" FontSize="10" />
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Odometer (Cluster):" Classes="muted" Margin="0,4" />
+                                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ClusterMileage}" FontWeight="Bold" Margin="0,4" />
+
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Security Protocol:" Classes="muted" Margin="0,4" />
+                                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ImmoGeneration}" FontWeight="Bold" Margin="0,4" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- Quick Action Tiles -->
+                            <TextBlock Text="QUICK ACTIONS" FontSize="12" FontWeight="Bold" LetterSpacing="0.8" Foreground="{StaticResource BrandTextMutedBrush}" Margin="0,8,0,0" />
+                            <Grid ColumnDefinitions="*,*,*,*">
+                                <Button Grid.Column="0" Command="{Binding ReadPinCommand}" Classes="secondary" Margin="0,0,6,0" Padding="14">
+                                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                        <TextBlock Text="🔑" FontSize="20" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Read SKC / PIN" FontWeight="Bold" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Direct EEPROM login" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Grid.Column="1" Classes="secondary" Margin="6,0,6,0" Padding="14">
+                                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                        <TextBlock Text="⚠️" FontSize="20" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Scan Faults" FontWeight="Bold" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Read module DTCs" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Grid.Column="2" Classes="secondary" Margin="6,0,6,0" Padding="14">
+                                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                        <TextBlock Text="🪟" FontSize="20" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Window Roll-Up" FontWeight="Bold" HorizontalAlignment="Center" />
+                                        <TextBlock Text="CCM 1-click feature" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Grid.Column="3" Classes="secondary" Margin="6,0,0,0" Padding="14">
+                                    <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                        <TextBlock Text="💾" FontSize="20" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Backup EEPROM" FontWeight="Bold" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Full cluster &amp; ECU bin" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- ================================================= -->
+                <!-- TAB 1: EDC15 / EDC16 FLASHING WORKBENCH           -->
+                <!-- ================================================= -->
+                <TabItem>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20" Spacing="16">
+                            
+                            <!-- Header Info -->
+                            <Border Classes="card">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="BOSCH EDC15 / EDC16 HIGH-SPEED FLASH WORKBENCH" Classes="header" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                        <TextBlock Text="K-Line multi-speed flash reading, writing, and C167 hardware boot recovery" Classes="muted" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Border Background="{StaticResource BrandSurfaceAltBrush}" CornerRadius="6" Padding="10,6">
+                                            <TextBlock Text="{Binding EcuModel}" FontWeight="Bold" FontSize="11" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Flash Configuration & File Selection -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Flash File &amp; Flashing Parameters" Classes="header" />
+
+                                    <!-- File Selector Row -->
+                                    <Grid ColumnDefinitions="*,Auto,Auto">
+                                        <TextBox Grid.Column="0" Text="{Binding FlashFilePath}" 
+                                                 Background="{StaticResource BrandSurfaceAltBrush}"
+                                                 BorderBrush="{StaticResource BrandBorderBrush}" Height="36" />
+                                        <Button Grid.Column="1" Content="BROWSE..." Classes="secondary" Margin="8,0" Height="36" />
+                                        <Border Grid.Column="2" Background="{StaticResource BrandSurfaceAltBrush}"
+                                                BorderBrush="{StaticResource BrandBorderBrush}" BorderThickness="1"
+                                                CornerRadius="6" Padding="12,0" VerticalAlignment="Stretch">
+                                            <TextBlock Text="{Binding FlashFileSize}" VerticalAlignment="Center" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Checkboxes / Options -->
+                                    <Grid ColumnDefinitions="Auto,Auto,Auto" Margin="0,8,0,0">
+                                        <CheckBox Grid.Column="0" Content="Smart Sector Checksum (Skip unmodified sectors)" 
+                                                  IsChecked="{Binding SmartSectorCheck}" Margin="0,0,16,0" />
+                                        <CheckBox Grid.Column="1" Content="Verify Written Blocks" 
+                                                  IsChecked="{Binding VerifyChecksum}" Margin="0,0,16,0" />
+                                        <CheckBox Grid.Column="2" Content="Fast Init (ISO 14230)" 
+                                                  IsChecked="{Binding FastInitEnabled}" />
+                                    </Grid>
+
+                                    <!-- Actions Row -->
+                                    <Grid ColumnDefinitions="*,*,*" Margin="0,12,0,0">
+                                        <Button Grid.Column="0" Command="{Binding DumpFlashCommand}"
+                                                Classes="primary" Margin="0,0,6,0" Padding="14">
+                                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                                <TextBlock Text="⬇️" FontSize="14" />
+                                                <TextBlock Text="DUMP FLASH MEMORY" FontWeight="Bold" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <Button Grid.Column="1" Command="{Binding WriteFlashCommand}"
+                                                Classes="accent" Margin="6,0,6,0" Padding="14">
+                                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                                <TextBlock Text="⚡" FontSize="14" />
+                                                <TextBlock Text="WRITE FLASH IMAGE" FontWeight="Bold" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <Button Grid.Column="2" Classes="secondary" Margin="6,0,0,0" Padding="14">
+                                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                                <TextBlock Text="🛡️" FontSize="14" />
+                                                <TextBlock Text="C167 BOOT RECOVERY" FontWeight="Bold" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Visual Sector Matrix (16 Sectors on 29F400) -->
+                            <Border Classes="card">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Text="SECTOR PROGRESS MATRIX (29F400BT 16-SECTORS)" Classes="header" FontSize="13" />
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <Rectangle Width="10" Height="10" Fill="{StaticResource BrandNeonLimeBrush}" />
+                                                <TextBlock Text="Verified" FontSize="10" Classes="muted" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <Rectangle Width="10" Height="10" Fill="{StaticResource BrandElectricCyanBrush}" />
+                                                <TextBlock Text="Flashing" FontSize="10" Classes="muted" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <Rectangle Width="10" Height="10" Fill="{StaticResource BrandSurfaceAltBrush}" />
+                                                <TextBlock Text="Unchanged" FontSize="10" Classes="muted" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- 16 Sectors Visual Representation -->
+                                    <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="Auto,Auto" Margin="0,8,0,0">
+                                        <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource BrandNeonLimeBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 00" Foreground="#0B1304" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="1" Background="{StaticResource BrandNeonLimeBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 01" Foreground="#0B1304" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="2" Background="{StaticResource BrandNeonLimeBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 02" Foreground="#0B1304" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="3" Background="{StaticResource BrandNeonLimeBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 03" Foreground="#0B1304" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="4" Background="{StaticResource BrandNeonLimeBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 04" Foreground="#0B1304" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="5" Background="{StaticResource BrandNeonLimeBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 05" Foreground="#0B1304" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="6" Background="{StaticResource BrandElectricCyanBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 06" Foreground="#091018" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="7" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 07" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+
+                                        <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 08" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="1" Grid.Column="1" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 09" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 0A" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="1" Grid.Column="3" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 0B" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="1" Grid.Column="4" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 0C" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="1" Grid.Column="5" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 0D" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="1" Grid.Column="6" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 0E" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <Border Grid.Row="1" Grid.Column="7" Background="{StaticResource BrandSurfaceAltBrush}" Height="28" Margin="2" CornerRadius="4">
+                                            <TextBlock Text="SEC 0F" Foreground="{StaticResource BrandTextMutedBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- ================================================= -->
+                <!-- TAB 2: CLUSTER & IMMOBILIZER                      -->
+                <!-- ================================================= -->
+                <TabItem>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20" Spacing="16">
+                            
+                            <Border Classes="card">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="INSTRUMENT CLUSTER &amp; IMMOBILIZER ADAPTATION (ADDRESS 17)" Classes="header" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                        <TextBlock Text="EEPROM read/write, PIN extraction, mileage adjustment, and Channel 50 adaptation" Classes="muted" />
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Background="{StaticResource BrandSurfaceAltBrush}" CornerRadius="6" Padding="12,6">
+                                        <TextBlock Text="{Binding ClusterType}" FontWeight="Bold" FontSize="11" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Cluster Details Grid -->
+                            <Grid ColumnDefinitions="*,*">
+                                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="Extracted Security &amp; Odometer" Classes="header" />
+                                        
+                                        <Border Background="{StaticResource BrandSurfaceAltBrush}" CornerRadius="8" Padding="16" BorderBrush="{StaticResource BrandNeonLimeBrush}" BorderThickness="1">
+                                            <Grid ColumnDefinitions="*,*">
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="LOGIN / PIN CODE" Classes="muted" FontSize="10" FontWeight="Bold" />
+                                                    <TextBlock Text="{Binding ClusterPin}" FontSize="24" FontWeight="Black" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="ODOMETER READING" Classes="muted" FontSize="10" FontWeight="Bold" />
+                                                    <TextBlock Text="{Binding ClusterMileage}" FontSize="24" FontWeight="Black" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+                                            <Button Grid.Column="0" Content="DUMP EEPROM" Classes="primary" Margin="0,0,4,0" Padding="12" />
+                                            <Button Grid.Column="1" Content="WRITE EEPROM" Classes="secondary" Margin="4,0,0,0" Padding="12" />
+                                        </Grid>
+                                        <Button Content="DUMP VDO NEC ROM (FIS DISPLAY 0x10000)" Classes="secondary" HorizontalAlignment="Stretch" Padding="10" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Adaptation Wizard -->
+                                <Border Grid.Column="1" Classes="card" Margin="8,0,0,0">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="Immobilizer 3 Adaptation Assistant" Classes="header" />
+                                        <TextBlock Text="Match replacement cluster to ECU using Channel 50 login procedure" Classes="muted" />
+
+                                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="140,*" Margin="0,8">
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Cluster Old PIN:" Classes="muted" VerticalAlignment="Center" Margin="0,6" />
+                                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ClusterPin}" Height="32" Margin="0,6" />
+
+                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Target ECU PIN:" Classes="muted" VerticalAlignment="Center" Margin="0,6" />
+                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TargetClusterPin}" Height="32" Margin="0,6" />
+                                        </Grid>
+
+                                        <Button Content="START CHANNEL 50 ADAPTATION" Classes="accent" HorizontalAlignment="Stretch" Padding="12" />
+                                        <Button Content="RESET TO FACTORY (CHANNEL 00)" Classes="secondary" HorizontalAlignment="Stretch" Padding="10" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- ================================================= -->
+                <!-- TAB 3: LIVE DIAGNOSTICS & OSCILLOSCOPE SCOPE      -->
+                <!-- ================================================= -->
+                <TabItem>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20" Spacing="16">
+                            
+                            <!-- Banner Styled Diagnostic Window -->
+                            <Border Classes="card" Background="#0C1016" BorderBrush="{StaticResource BrandBorderBrush}" BorderThickness="1.5">
+                                <Grid RowDefinitions="Auto,240,Auto">
+                                    
+                                    <!-- Window Header (Like in the Banner) -->
+                                    <Border Grid.Row="0" Background="{StaticResource BrandSurfaceAltBrush}" Padding="12,8" CornerRadius="6,6,0,0">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Text="USB - Diagnostic Operations | VAG 1.9 TDI EDC15 - Scope Channel Live" 
+                                                       FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandTextPrimaryBrush}" VerticalAlignment="Center" />
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="RATE: 10400 BAUD" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" VerticalAlignment="Center" />
+                                                <TextBlock Text="SAMPLE: 50 ms" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandNeonLimeBrush}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Mock Oscilloscope Canvas with Grid -->
+                                    <Border Grid.Row="1" Background="#080C10" ClipToBounds="True">
+                                        <Grid ColumnDefinitions="*,180">
+                                            
+                                            <!-- Oscilloscope Grid & Neon Waveform -->
+                                            <Grid Grid.Column="0">
+                                                <!-- Grid Lines Mockup -->
+                                                <Canvas>
+                                                    <Line StartPoint="0,40" EndPoint="800,40" Stroke="#16202C" StrokeThickness="1" />
+                                                    <Line StartPoint="0,80" EndPoint="800,80" Stroke="#16202C" StrokeThickness="1" />
+                                                    <Line StartPoint="0,120" EndPoint="800,120" Stroke="#1E2A3A" StrokeThickness="1" />
+                                                    <Line StartPoint="0,160" EndPoint="800,160" Stroke="#16202C" StrokeThickness="1" />
+                                                    <Line StartPoint="0,200" EndPoint="800,200" Stroke="#16202C" StrokeThickness="1" />
+                                                </Canvas>
+
+                                                <!-- The Neon Pulse Line (ECG / Telemetry Waveform) -->
+                                                <Polyline Points="10,120 80,120 120,90 140,160 160,50 180,180 200,120 280,120 320,100 340,150 360,60 380,170 400,120 500,120 540,80 560,160 580,40 600,190 620,120 750,120"
+                                                          Stroke="{StaticResource BrandNeonLimeBrush}" StrokeThickness="2" />
+                                            </Grid>
+
+                                            <!-- Live Channel Values on the Right -->
+                                            <Border Grid.Column="1" Background="#0E141C" BorderBrush="{StaticResource BrandBorderBrush}" BorderThickness="1,0,0,0" Padding="12">
+                                                <StackPanel Spacing="8">
+                                                    <TextBlock Text="LIVE TELEMETRY" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandTextMutedBrush}" />
+                                                    
+                                                    <StackPanel>
+                                                        <TextBlock Text="CH1: RPM" FontSize="10" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                                        <TextBlock Text="{Binding EngineRpm}" FontSize="15" FontWeight="Black" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                                    </StackPanel>
+
+                                                    <StackPanel>
+                                                        <TextBlock Text="CH2: MAP (BOOST)" FontSize="10" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                                        <TextBlock Text="{Binding BoostActual}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                                    </StackPanel>
+
+                                                    <StackPanel>
+                                                        <TextBlock Text="CH3: MAF (AIRFLOW)" FontSize="10" Foreground="{StaticResource BrandWarningBrush}" />
+                                                        <TextBlock Text="{Binding MafActual}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource BrandWarningBrush}" />
+                                                    </StackPanel>
+
+                                                    <StackPanel>
+                                                        <TextBlock Text="CH4: INJ QUANTITY" FontSize="10" Foreground="{StaticResource BrandTextPrimaryBrush}" />
+                                                        <TextBlock Text="{Binding InjectionQuantity}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource BrandTextPrimaryBrush}" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Bottom Gauge Badges (Tachometer & Temp) -->
+                                    <Border Grid.Row="2" Background="{StaticResource BrandSurfaceAltBrush}" Padding="12,8" CornerRadius="0,0,6,6">
+                                        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                                            <Border Grid.Column="0" Background="#16202C" CornerRadius="4" Padding="10,4" Margin="0,0,10,0">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <TextBlock Text="⚠️" Foreground="{StaticResource BrandWarningBrush}" />
+                                                    <TextBlock Text="{Binding CoolantTemp}" FontWeight="Bold" FontSize="11" />
+                                                </StackPanel>
+                                            </Border>
+
+                                            <Border Grid.Column="1" Background="#16202C" CornerRadius="4" Padding="10,4">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <TextBlock Text="⏱️" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                                    <TextBlock Text="{Binding EngineRpm, StringFormat='{}{0} RPM'}" FontWeight="Bold" FontSize="11" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                                </StackPanel>
+                                            </Border>
+
+                                            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8">
+                                                <Button Content="GROUP 003 (EGR/MAF)" Classes="secondary" Padding="8,4" FontSize="10" />
+                                                <Button Content="GROUP 011 (BOOST)" Classes="secondary" Padding="8,4" FontSize="10" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <!-- Fault Codes & Actuator Tests -->
+                            <Grid ColumnDefinitions="*,*">
+                                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="Diagnostic Trouble Codes (DTCs)" Classes="header" />
+                                        <ListBox Background="{StaticResource BrandSurfaceAltBrush}" Height="110" CornerRadius="6">
+                                            <ListBoxItem>17965 - Charge Pressure Control: Positive Deviation (P1557)</ListBoxItem>
+                                            <ListBoxItem>17552 - Mass Air Flow Sensor (G70): Open or Short to Ground (P1144)</ListBoxItem>
+                                        </ListBox>
+                                        <Grid ColumnDefinitions="*,*">
+                                            <Button Grid.Column="0" Content="SCAN DTCS" Classes="primary" Margin="0,0,4,0" Padding="8" />
+                                            <Button Grid.Column="1" Content="CLEAR DTCS" Classes="secondary" Margin="4,0,0,0" Padding="8" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="1" Classes="card" Margin="8,0,0,0">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock Text="Actuator Output Cycling (Title 0x08)" Classes="header" />
+                                        <TextBlock Text="Test hardware relays, solenoids, and needles sequentially" Classes="muted" />
+                                        <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+                                            <Button Grid.Column="0" Content="START ACTUATOR TEST" Classes="secondary" Margin="0,0,4,0" Padding="10" />
+                                            <Button Grid.Column="1" Content="NEXT COMPONENT" Classes="primary" Margin="4,0,0,0" Padding="10" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- ================================================= -->
+                <!-- TAB 4: COMFORT & MODULES (CCM, AIRBAG, RADIO)     -->
+                <!-- ================================================= -->
+                <TabItem>
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="20" Spacing="16">
+                            
+                            <Border Classes="card">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="AUXILIARY MODULES &amp; COMFORT CODING" Classes="header" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                    <TextBlock Text="Comfort Control Module (CCM), Airbag crash reset, and Radio SAFE code recovery" Classes="muted" />
+                                </StackPanel>
+                            </Border>
+
+                            <Grid ColumnDefinitions="*,*">
+                                
+                                <!-- CCM Convenience Features -->
+                                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="Comfort Control Module (Address 46 - 1J0 / 1C0)" Classes="header" />
+                                        
+                                        <CheckBox Content="Enable Remote Window Roll-Up / Roll-Down" 
+                                                  IsChecked="{Binding WindowRollUpEnabled}" />
+                                        <CheckBox Content="Alarm Siren Chirp on Lock / Unlock" 
+                                                  IsChecked="{Binding AlarmChirpEnabled}" />
+                                        <CheckBox Content="Auto-Lock at 15 km/h &amp; Auto-Unlock on Key Pull" 
+                                                  IsChecked="{Binding AutoLockEnabled}" />
+                                        <CheckBox Content="Selective Unlocking (Driver Door First)" 
+                                                  IsChecked="{Binding SelectiveUnlock}" />
+
+                                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                            <Button Grid.Column="0" Content="READ CCM EEPROM" Classes="secondary" Margin="0,0,4,0" Padding="10" />
+                                            <Button Grid.Column="1" Content="APPLY TO CCM" Classes="primary" Margin="4,0,0,0" Padding="10" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Airbag & Radio Codes -->
+                                <StackPanel Grid.Column="1" Spacing="16" Margin="8,0,0,0">
+                                    
+                                    <!-- Airbag Card -->
+                                    <Border Classes="card">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="Airbag Controller (Address 15 - VW51)" Classes="header" />
+                                            <TextBlock Text="Safe CR16 memory dump and soft crash data clearing" Classes="muted" />
+                                            <Grid ColumnDefinitions="*,*">
+                                                <Button Grid.Column="0" Content="CLEAR CRASH DATA" Classes="secondary" Margin="0,0,4,0" Padding="10" />
+                                                <Button Grid.Column="1" Content="DUMP CR16 BIN" Classes="secondary" Margin="4,0,0,0" Padding="10" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Radio Safe Code Card -->
+                                    <Border Classes="card">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="Radio SAFE Code Recovery (Address 56)" Classes="header" />
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <StackPanel>
+                                                    <TextBlock Text="EXTRACTED SAFE CODE:" Classes="muted" FontSize="10" FontWeight="Bold" />
+                                                    <TextBlock Text="{Binding RadioSafeCode}" FontSize="22" FontWeight="Black" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                                </StackPanel>
+                                                <Button Grid.Column="1" Content="RETRIEVE CODE" Classes="primary" VerticalAlignment="Center" Padding="12,8" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- ================================================= -->
+                <!-- TAB 5: HEX INSPECTOR & K-LINE LOG                 -->
+                <!-- ================================================= -->
+                <TabItem>
+                    <Grid Margin="20" ColumnDefinitions="*,*">
+                        
+                        <!-- Left: Raw Hex Viewer -->
+                        <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                            <Grid RowDefinitions="Auto,*">
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                                    <TextBlock Text="RAW HEX INSPECTOR (EEPROM / FLASH)" Classes="header" FontSize="12" />
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                        <Button Content="LOAD BIN" Classes="secondary" Padding="8,4" FontSize="10" />
+                                        <Button Content="SAVE BIN" Classes="secondary" Padding="8,4" FontSize="10" />
+                                    </StackPanel>
+                                </Grid>
+                                <TextBox Grid.Row="1" 
+                                         FontFamily="Courier New, Consolas, Monospace" 
+                                         FontSize="11"
+                                         Background="#080C10"
+                                         BorderBrush="{StaticResource BrandBorderBrush}"
+                                         IsReadOnly="True"
+                                         Text="00000000: 55 AA 01 02 03 04 05 06  07 08 09 0A 0B 0C 0D 0E  U...............&#x0a;00000010: 57 56 57 5A 5A 5A 31 4A  5A 31 57 30 31 32 33 34  WVWZZZ1JZ1W01234&#x0a;00000020: 30 33 38 39 30 36 30 31  39 48 4A 20 20 20 20 20  038906019HJ     &#x0a;00000030: 00 00 12 34 56 78 9A BC  DE F0 11 22 33 44 55 66  ...4Vx.....&quot;3DUf&#x0a;00000040: FF FF FF FF FF FF FF FF  FF FF FF FF FF FF FF FF  ................&#x0a;00000050: 12 D4 00 00 24 00 01 00  00 00 00 00 00 00 00 00  ....$..........." />
+                            </Grid>
+                        </Border>
+
+                        <!-- Right: Real-time K-Line Log -->
+                        <Border Grid.Column="1" Classes="card" Margin="8,0,0,0">
+                            <Grid RowDefinitions="Auto,*">
+                                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                                    <TextBlock Text="REAL-TIME K-LINE PACKET LOG" Classes="header" FontSize="12" />
+                                    <Button Grid.Column="1" Content="CLEAR" Classes="secondary" Padding="8,4" FontSize="10" />
+                                </Grid>
+                                <TextBox Grid.Row="1"
+                                         FontFamily="Courier New, Consolas, Monospace"
+                                         FontSize="11"
+                                         Background="#080C10"
+                                         BorderBrush="{StaticResource BrandBorderBrush}"
+                                         IsReadOnly="True"
+                                         Text="[13:28:01.102] TX: 01 (5-Baud Slow Init Address 0x01)&#x0a;[13:28:02.410] RX: 55 (Sync Byte Detected - Locked to 10400 Baud)&#x0a;[13:28:02.480] RX: 01 8A (Keyword Bytes: KW1281 Protocol Confirmed)&#x0a;[13:28:02.520] TX: Inverted Address ACK (0xFE)&#x0a;[13:28:02.730] RX: Title 0x00 Ident: '038906019HJ 1.9l R4 EDC 0000SG 1536'&#x0a;[13:28:03.100] TX: Title 0x19 Security Access Level 41 Request&#x0a;[13:28:03.220] RX: Security Access Granted. Controller Unlocked." />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+            </TabControl>
+        </Grid>
+
+        <!-- ========================================================= -->
+        <!-- BOTTOM STATUS & TELEMETRY STRIP                           -->
+        <!-- ========================================================= -->
+        <Border Grid.Row="2"
+                Background="{StaticResource BrandSurfaceHeaderBrush}"
+                BorderBrush="{StaticResource BrandBorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="16,8">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                
+                <!-- TX / RX Activity Blinker LEDs -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Ellipse Width="7" Height="7" Fill="{StaticResource BrandElectricCyanBrush}" />
+                        <TextBlock Text="TX" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandTextMutedBrush}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Ellipse Width="7" Height="7" Fill="{StaticResource BrandNeonLimeBrush}" />
+                        <TextBlock Text="RX" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandTextMutedBrush}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Status Message -->
+                <TextBlock Grid.Column="1" Text="{Binding BottomStatusMessage}"
+                           VerticalAlignment="Center" FontSize="11"
+                           Foreground="{StaticResource BrandTextPrimaryBrush}" Margin="16,0" />
+
+                <!-- Operation Progress Bar -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="16,0">
+                    <TextBlock Text="{Binding FlashOperationStatus}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BrandNeonLimeBrush}" VerticalAlignment="Center" />
+                    <ProgressBar Value="{Binding FlashProgressPercent}" Maximum="100" Width="140" Height="8"
+                                 Foreground="{StaticResource BrandElectricCyanBrush}"
+                                 Background="{StaticResource BrandSurfaceAltBrush}"
+                                 BorderBrush="{StaticResource BrandBorderBrush}" />
+                </StackPanel>
+
+                <!-- Console / Log Drawer Button -->
+                <Button Grid.Column="3" Content="▲ K-LINE LOG" Classes="secondary"
+                        Padding="10,4" FontSize="10" FontWeight="Bold" />
+            </Grid>
+        </Border>
+
+    </Grid>
 
 </Window>

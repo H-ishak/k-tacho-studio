@@ -2,14 +2,107 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="KTachoStudio.UI.App"
              xmlns:local="using:KTachoStudio.UI"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Dark">
 
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
+    <Application.Resources>
+        <!-- TDI Lab & K-Tacho Brand Palette -->
+        <Color x:Key="BrandCanvasColor">#12151B</Color>
+        <Color x:Key="BrandSurfaceColor">#181D24</Color>
+        <Color x:Key="BrandSurfaceHeaderColor">#1E242E</Color>
+        <Color x:Key="BrandSurfaceAltColor">#232B36</Color>
+        <Color x:Key="BrandBorderColor">#2D3643</Color>
+        <Color x:Key="BrandBorderFocusColor">#00AEEF</Color>
+
+        <Color x:Key="BrandElectricCyanColor">#00AEEF</Color>
+        <Color x:Key="BrandElectricCyanHoverColor">#29C2FF</Color>
+        <Color x:Key="BrandNeonLimeColor">#84CC16</Color>
+        <Color x:Key="BrandTitaniumColor">#7F8A96</Color>
+        
+        <Color x:Key="BrandTextPrimaryColor">#FFFFFF</Color>
+        <Color x:Key="BrandTextMutedColor">#94A3B8</Color>
+        <Color x:Key="BrandWarningColor">#F59E0B</Color>
+        <Color x:Key="BrandSuccessColor">#10B981</Color>
+        <Color x:Key="BrandErrorColor">#EF4444</Color>
+
+        <!-- Solid Brushes -->
+        <SolidColorBrush x:Key="BrandCanvasBrush" Color="{StaticResource BrandCanvasColor}" />
+        <SolidColorBrush x:Key="BrandSurfaceBrush" Color="{StaticResource BrandSurfaceColor}" />
+        <SolidColorBrush x:Key="BrandSurfaceHeaderBrush" Color="{StaticResource BrandSurfaceHeaderColor}" />
+        <SolidColorBrush x:Key="BrandSurfaceAltBrush" Color="{StaticResource BrandSurfaceAltColor}" />
+        <SolidColorBrush x:Key="BrandBorderBrush" Color="{StaticResource BrandBorderColor}" />
+        <SolidColorBrush x:Key="BrandBorderFocusBrush" Color="{StaticResource BrandBorderFocusColor}" />
+
+        <SolidColorBrush x:Key="BrandElectricCyanBrush" Color="{StaticResource BrandElectricCyanColor}" />
+        <SolidColorBrush x:Key="BrandElectricCyanHoverBrush" Color="{StaticResource BrandElectricCyanHoverColor}" />
+        <SolidColorBrush x:Key="BrandNeonLimeBrush" Color="{StaticResource BrandNeonLimeColor}" />
+        <SolidColorBrush x:Key="BrandTitaniumBrush" Color="{StaticResource BrandTitaniumColor}" />
+
+        <SolidColorBrush x:Key="BrandTextPrimaryBrush" Color="{StaticResource BrandTextPrimaryColor}" />
+        <SolidColorBrush x:Key="BrandTextMutedBrush" Color="{StaticResource BrandTextMutedColor}" />
+        <SolidColorBrush x:Key="BrandWarningBrush" Color="{StaticResource BrandWarningColor}" />
+        <SolidColorBrush x:Key="BrandSuccessBrush" Color="{StaticResource BrandSuccessColor}" />
+        <SolidColorBrush x:Key="BrandErrorBrush" Color="{StaticResource BrandErrorColor}" />
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
+        
+        <!-- Base Button Styles -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource BrandElectricCyanBrush}" />
+            <Setter Property="Foreground" Value="#091018" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+        </Style>
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="{StaticResource BrandElectricCyanHoverBrush}" />
+        </Style>
+
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="{StaticResource BrandSurfaceAltBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource BrandTextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,7" />
+        </Style>
+        <Style Selector="Button.secondary:pointerover">
+            <Setter Property="Background" Value="{StaticResource BrandBorderBrush}" />
+        </Style>
+
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="{StaticResource BrandNeonLimeBrush}" />
+            <Setter Property="Foreground" Value="#0B1304" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+        </Style>
+
+        <!-- Card Container Style -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{StaticResource BrandSurfaceBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <!-- Section Header -->
+        <Style Selector="TextBlock.header">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource BrandTextPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.muted">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{StaticResource BrandTextMutedBrush}" />
+        </Style>
     </Application.Styles>
 </Application>
