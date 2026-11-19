@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:KTachoStudio.UI.ViewModels.Pages"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+             x:Class="KTachoStudio.UI.Views.Pages.LiveScopeView"
+             x:DataType="vm:LiveScopeViewModel">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="20">
+            
+            <!-- Oscilloscope Banner Window -->
+            <Border Classes="card" Background="#080C11" BorderBrush="{StaticResource BrandBorderBrush}" BorderThickness="1.5">
+                <Grid RowDefinitions="Auto,260,Auto">
+                    
+                    <!-- Window Header -->
+                    <Border Grid.Row="0" Background="{StaticResource BrandSurfaceAltBrush}" Padding="16,10" CornerRadius="8,8,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="USB - Diagnostic Operations | VAG 1.9 TDI EDC15 - Scope Channel Live" 
+                                       FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandTextPrimaryBrush}" VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="RATE: 10400 BAUD" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="SAMPLE: 50 ms" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandNeonLimeBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Oscilloscope Canvas with Grid -->
+                    <Border Grid.Row="1" Background="#05080C" ClipToBounds="True">
+                        <Grid ColumnDefinitions="*,220">
+                            
+                            <!-- Grid & Neon Waveform -->
+                            <Grid Grid.Column="0">
+                                <Canvas>
+                                    <Line StartPoint="0,50" EndPoint="900,50" Stroke="#141E28" StrokeThickness="1" />
+                                    <Line StartPoint="0,100" EndPoint="900,100" Stroke="#141E28" StrokeThickness="1" />
+                                    <Line StartPoint="0,150" EndPoint="900,150" Stroke="#1B2836" StrokeThickness="1.5" />
+                                    <Line StartPoint="0,200" EndPoint="900,200" Stroke="#141E28" StrokeThickness="1" />
+                                </Canvas>
+
+                                <Polyline Points="10,150 90,150 130,110 150,190 170,60 190,210 210,150 300,150 340,120 360,180 380,70 400,200 420,150 520,150 560,100 580,190 600,50 620,220 640,150 820,150"
+                                          Stroke="{StaticResource BrandNeonLimeBrush}" StrokeThickness="2.5" />
+                            </Grid>
+
+                            <!-- Channel Readouts on the Right -->
+                            <Border Grid.Column="1" Background="#090E14" BorderBrush="{StaticResource BrandBorderBrush}" BorderThickness="1,0,0,0" Padding="16">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="CHANNEL TELEMETRY" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BrandTextMutedBrush}" />
+                                    
+                                    <StackPanel>
+                                        <TextBlock Text="CH1: ENGINE RPM" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                        <TextBlock Text="{Binding EngineRpm}" FontSize="18" FontWeight="Black" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel>
+                                        <TextBlock Text="CH2: MAP (BOOST)" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                        <TextBlock Text="{Binding BoostActual}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel>
+                                        <TextBlock Text="CH3: MAF (AIRFLOW)" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandWarningBrush}" />
+                                        <TextBlock Text="{Binding MafActual}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource BrandWarningBrush}" />
+                                    </StackPanel>
+
+                                    <StackPanel>
+                                        <TextBlock Text="CH4: INJ QUANTITY" FontSize="10" FontWeight="Bold" Foreground="{StaticResource BrandTextPrimaryBrush}" />
+                                        <TextBlock Text="{Binding InjectionQuantity}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource BrandTextPrimaryBrush}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Bottom Badges -->
+                    <Border Grid.Row="2" Background="{StaticResource BrandSurfaceAltBrush}" Padding="16,10" CornerRadius="0,0,8,8">
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                            <Border Grid.Column="0" Background="#121822" CornerRadius="6" Padding="12,5" Margin="0,0,12,0">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="⚠️" Foreground="{StaticResource BrandWarningBrush}" />
+                                    <TextBlock Text="{Binding CoolantTemp}" FontWeight="Black" FontSize="12" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="#121822" CornerRadius="6" Padding="12,5">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="⏱️" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                    <TextBlock Text="{Binding EngineRpm, StringFormat='{}{0} RPM'}" FontWeight="Black" FontSize="12" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                </StackPanel>
+                            </Border>
+
+                            <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="10">
+                                <Button Content="GROUP 003 (EGR/MAF)" Classes="secondary" Padding="10,5" FontSize="11" />
+                                <Button Content="GROUP 011 (BOOST)" Classes="secondary" Padding="10,5" FontSize="11" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Fault Codes & Actuator Tests -->
+            <Grid ColumnDefinitions="*,*">
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Diagnostic Trouble Codes (DTCs)" Classes="header" />
+                        <ListBox Background="#0F141C" Height="110" CornerRadius="8">
+                            <ListBoxItem>17965 - Charge Pressure Control: Positive Deviation (P1557)</ListBoxItem>
+                            <ListBoxItem>17552 - Mass Air Flow Sensor (G70): Open or Short to Ground (P1144)</ListBoxItem>
+                        </ListBox>
+                        <Grid ColumnDefinitions="*,*">
+                            <Button Grid.Column="0" Command="{Binding ScanDtcsCommand}" Content="SCAN DTCS" Classes="primary" Margin="0,0,6,0" Padding="10" />
+                            <Button Grid.Column="1" Command="{Binding ClearDtcsCommand}" Content="CLEAR DTCS" Classes="secondary" Margin="6,0,0,0" Padding="10" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Actuator Output Cycling (Title 0x08)" Classes="header" />
+                        <TextBlock Text="Trigger hardware relays, solenoids, and needles sequentially" Classes="muted" />
+                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                            <Button Grid.Column="0" Command="{Binding StartActuatorTestCommand}" Content="START ACTUATOR TEST" Classes="secondary" Margin="0,0,6,0" Padding="12" />
+                            <Button Grid.Column="1" Content="NEXT COMPONENT" Classes="primary" Margin="6,0,0,0" Padding="12" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

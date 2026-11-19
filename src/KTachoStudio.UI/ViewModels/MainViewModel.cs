@@ -1,20 +1,24 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using KTachoStudio.Core.Adapters;
+using KTachoStudio.UI.ViewModels.Pages;
 
 namespace KTachoStudio.UI.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
     // -------------------------------------------------------------
-    // Connection & Hardware State
+    // Hardware Toolbar State (Global Header)
     // -------------------------------------------------------------
     [ObservableProperty]
-    private string _selectedPort = "COM3";
+    private string _selectedPort = "MOCK_SIMULATOR";
 
     [ObservableProperty]
-    private ObservableCollection<string> _availablePorts = new() { "COM1", "COM3", "COM4", "/dev/ttyUSB0", "FTDI D2XX" };
+    private ObservableCollection<string> _availablePorts = new() { "MOCK_SIMULATOR", "COM1", "COM3", "COM4", "/dev/ttyUSB0" };
 
     [ObservableProperty]
     private string _selectedBaud = "10400 (Standard)";
@@ -26,180 +30,206 @@ public partial class MainViewModel : ViewModelBase
     private bool _isConnected = false;
 
     [ObservableProperty]
-    private string _connectionStatusText = "DISCONNECTED";
+    private string _connectionStatusText = "CONNECT";
+
+    [ObservableProperty]
+    private bool _isDetecting = false;
+
+    [ObservableProperty]
+    private string _autoDetectButtonText = "AUTO-DETECT";
 
     [ObservableProperty]
     private string _batteryVoltage = "13.8V Bench";
 
-    [ObservableProperty]
-    private bool _isBatteryVoltageOk = true;
+    // -------------------------------------------------------------
+    // MVC / Page Router & Current View
+    // -------------------------------------------------------------
+    public OverviewViewModel OverviewPage { get; } = new();
+    public EdcTuningViewModel EdcTuningPage { get; } = new();
+    public ClusterImmoViewModel ClusterImmoPage { get; } = new();
+    public LiveScopeViewModel LiveScopePage { get; } = new();
+    public ComfortModulesViewModel ComfortModulesPage { get; } = new();
+    public HexLogViewModel HexLogPage { get; } = new();
 
-    // -------------------------------------------------------------
-    // Navigation
-    // -------------------------------------------------------------
+    [ObservableProperty]
+    private ViewModelBase _currentPage;
+
     [ObservableProperty]
     private int _selectedTabIndex = 0;
 
     // -------------------------------------------------------------
-    // Controller Info (Ident)
+    // Bottom Telemetry Strip (Global Footer)
     // -------------------------------------------------------------
     [ObservableProperty]
-    private string _controllerPartNumber = "038 906 019 HJ";
-
-    [ObservableProperty]
-    private string _controllerComponent = "1.9l R4 EDC 0000SG  1536";
-
-    [ObservableProperty]
-    private string _controllerCoding = "00002";
-
-    [ObservableProperty]
-    private string _controllerWsc = "01234";
-
-    [ObservableProperty]
-    private string _controllerVin = "WVWZZZ1JZ1W012345";
-
-    [ObservableProperty]
-    private string _controllerProtocol = "KWP1281 / KWP2000";
-
-    [ObservableProperty]
-    private string _securityAccessStatus = "Level 41 Authenticated";
-
-    // -------------------------------------------------------------
-    // EDC15 / EDC16 Tuning Workbench
-    // -------------------------------------------------------------
-    [ObservableProperty]
-    private string _ecuModel = "Bosch EDC15P+ (C167 + 29F400BT)";
-
-    [ObservableProperty]
-    private string _flashFilePath = "D:\\Tuning\\Golf4_1.9TDI_130_Stage1.bin";
-
-    [ObservableProperty]
-    private string _flashFileSize = "512 KB (16 Sectors)";
-
-    [ObservableProperty]
-    private string _selectedFlashSpeed = "Medium (Fast Link)";
-
-    [ObservableProperty]
-    private bool _fastInitEnabled = false;
-
-    [ObservableProperty]
-    private bool _smartSectorCheck = true;
-
-    [ObservableProperty]
-    private bool _verifyChecksum = true;
-
-    [ObservableProperty]
-    private int _flashProgressPercent = 42;
-
-    [ObservableProperty]
-    private string _flashOperationStatus = "Reading Sector 0x06 (42%) - 38.4 KB/s";
-
-    // -------------------------------------------------------------
-    // Cluster & Immo
-    // -------------------------------------------------------------
-    [ObservableProperty]
-    private string _clusterType = "VDO V08 (Golf Mk4 / Bora)";
-
-    [ObservableProperty]
-    private string _clusterPin = "04821";
-
-    [ObservableProperty]
-    private string _clusterMileage = "184,320 km";
-
-    [ObservableProperty]
-    private string _immoGeneration = "Immobilizer 3 (6-pin seed/key)";
-
-    [ObservableProperty]
-    private string _targetClusterPin = "01234";
-
-    // -------------------------------------------------------------
-    // Live Diagnostics & Telemetry
-    // -------------------------------------------------------------
-    [ObservableProperty]
-    private int _measuringGroup = 3;
-
-    [ObservableProperty]
-    private string _engineRpm = "1280";
-
-    [ObservableProperty]
-    private string _boostActual = "1980 mbar";
-
-    [ObservableProperty]
-    private string _mafActual = "850 mg/str";
-
-    [ObservableProperty]
-    private string _injectionQuantity = "42.5 mg/str";
-
-    [ObservableProperty]
-    private string _coolantTemp = "90 °C";
-
-    // -------------------------------------------------------------
-    // Comfort (CCM) Features
-    // -------------------------------------------------------------
-    [ObservableProperty]
-    private bool _windowRollUpEnabled = true;
-
-    [ObservableProperty]
-    private bool _alarmChirpEnabled = true;
-
-    [ObservableProperty]
-    private bool _autoLockEnabled = true;
-
-    [ObservableProperty]
-    private bool _selectiveUnlock = false;
-
-    // -------------------------------------------------------------
-    // Bottom Telemetry & Console
-    // -------------------------------------------------------------
-    [ObservableProperty]
-    private bool _txActive = true;
+    private bool _txActive = false;
 
     [ObservableProperty]
     private bool _rxActive = false;
 
     [ObservableProperty]
-    private string _bottomStatusMessage = "Ready - Port COM3 open at 10400 baud. Connected to 01 (Engine).";
+    private string _bottomStatusMessage = "Ready. Select Port and click CONNECT (or use MOCK_SIMULATOR to test offline).";
 
     [ObservableProperty]
-    private string _radioSafeCode = "1984";
+    private int _operationProgress = 0;
 
-    // -------------------------------------------------------------
-    // Commands
-    // -------------------------------------------------------------
-    [RelayCommand]
-    private void ToggleConnection()
+    [ObservableProperty]
+    private string _operationProgressStatus = "Idle";
+
+    public MainViewModel()
     {
-        IsConnected = !IsConnected;
-        ConnectionStatusText = IsConnected ? "CONNECTED" : "DISCONNECTED";
-        BottomStatusMessage = IsConnected 
-            ? $"Connected to {SelectedPort} ({SelectedBaud}) - ECU Ident: {ControllerPartNumber}" 
-            : "Disconnected from vehicle.";
+        _currentPage = OverviewPage;
+
+        // Auto-populate available COM ports
+        try
+        {
+            foreach (var port in System.IO.Ports.SerialPort.GetPortNames())
+            {
+                if (!AvailablePorts.Contains(port))
+                    AvailablePorts.Add(port);
+            }
+        }
+        catch { }
+
+        // Forward diagnostic messages to the bottom status strip
+        Kw1281TesterWrapper.OnLogMessage += line =>
+        {
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    BottomStatusMessage = line;
+                });
+            }
+        };
     }
 
+    // -------------------------------------------------------------
+    // Router Commands
+    // -------------------------------------------------------------
     [RelayCommand]
-    private void SwitchTab(string index)
+    private void Navigate(string target)
     {
-        if (int.TryParse(index, out var idx))
+        if (!int.TryParse(target, out var index)) return;
+        SelectedTabIndex = index;
+
+        CurrentPage = index switch
         {
-            SelectedTabIndex = idx;
+            0 => OverviewPage,
+            1 => EdcTuningPage,
+            2 => ClusterImmoPage,
+            3 => LiveScopePage,
+            4 => ComfortModulesPage,
+            5 => HexLogPage,
+            _ => OverviewPage
+        };
+    }
+
+    // -------------------------------------------------------------
+    // Auto-Detect COM Port & Baud Rate Command
+    // -------------------------------------------------------------
+    [RelayCommand]
+    private async Task AutoDetectAsync()
+    {
+        if (IsDetecting) return;
+
+        IsDetecting = true;
+        AutoDetectButtonText = "SCANNING...";
+        TxActive = true;
+        BottomStatusMessage = "Scanning serial ports and candidate baud rates for active VAG K-line controllers...";
+
+        try
+        {
+            var result = await Kw1281TesterWrapper.AutoDetectConnectionAsync(msg =>
+            {
+                Dispatcher.UIThread.Post(() => BottomStatusMessage = msg);
+            });
+
+            if (result.Success)
+            {
+                if (!AvailablePorts.Contains(result.Port))
+                {
+                    AvailablePorts.Add(result.Port);
+                }
+                SelectedPort = result.Port;
+
+                var prefix = result.Baud.ToString();
+                foreach (var b in AvailableBauds)
+                {
+                    if (b.StartsWith(prefix))
+                    {
+                        SelectedBaud = b;
+                        break;
+                    }
+                }
+
+                BottomStatusMessage = $"LOCKED: Detected {result.PartNumber} on {result.Port} @ {result.Baud} Baud (Address 0x{result.Address:X2}).";
+            }
+            else
+            {
+                BottomStatusMessage = "Auto-detect: No active VAG K-line controller detected. Check cable connection & ignition.";
+            }
+        }
+        catch (Exception ex)
+        {
+            BottomStatusMessage = $"Auto-detect error: {ex.Message}";
+        }
+        finally
+        {
+            IsDetecting = false;
+            AutoDetectButtonText = "AUTO-DETECT";
+            TxActive = false;
         }
     }
 
+    // -------------------------------------------------------------
+    // Live Hardware Connection Routine (wrapping kw1281test)
+    // -------------------------------------------------------------
     [RelayCommand]
-    private void DumpFlash()
+    private async Task ToggleConnectionAsync()
     {
-        BottomStatusMessage = "Initiating high-speed Flash dump over K-Line...";
-    }
+        if (IsConnected)
+        {
+            IsConnected = false;
+            ConnectionStatusText = "CONNECT";
+            TxActive = false;
+            RxActive = false;
+            OverviewPage.Reset();
+            BottomStatusMessage = "Disconnected from vehicle.";
+            return;
+        }
 
-    [RelayCommand]
-    private void WriteFlash()
-    {
-        BottomStatusMessage = "Safety check passed. Flashing modified sectors to EDC15...";
-    }
+        try
+        {
+            BottomStatusMessage = $"Opening {SelectedPort}... Initializing 5-baud wake-up on Address 01 via kw1281test...";
+            TxActive = true;
 
-    [RelayCommand]
-    private void ReadPin()
-    {
-        BottomStatusMessage = "Querying VDO Cluster Security Access... PIN extracted: " + ClusterPin;
+            var baud = 10400;
+            if (int.TryParse(SelectedBaud.Split(' ')[0], out var parsedBaud))
+            {
+                baud = parsedBaud;
+            }
+
+            var result = await Kw1281TesterWrapper.ConnectControllerAsync(SelectedPort, baud, 0x01);
+            if (result.Success)
+            {
+                RxActive = true;
+                IsConnected = true;
+                ConnectionStatusText = "DISCONNECT";
+                OverviewPage.UpdateFromEcu(result.PartNumber, result.Component, result.Coding, result.WorkshopCode);
+                BottomStatusMessage = $"CONNECTED: {result.PartNumber} {result.Component} [kw1281test engine]";
+            }
+            else
+            {
+                TxActive = false;
+                RxActive = false;
+                BottomStatusMessage = $"Wake-up failed: {result.Error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            TxActive = false;
+            RxActive = false;
+            BottomStatusMessage = $"Connection error: {ex.Message}";
+        }
     }
 }

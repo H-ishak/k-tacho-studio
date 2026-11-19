@@ -10,11 +10,11 @@
 
     <Application.Resources>
         <!-- TDI Lab & K-Tacho Brand Palette -->
-        <Color x:Key="BrandCanvasColor">#12151B</Color>
-        <Color x:Key="BrandSurfaceColor">#181D24</Color>
-        <Color x:Key="BrandSurfaceHeaderColor">#1E242E</Color>
-        <Color x:Key="BrandSurfaceAltColor">#232B36</Color>
-        <Color x:Key="BrandBorderColor">#2D3643</Color>
+        <Color x:Key="BrandCanvasColor">#0F1318</Color>
+        <Color x:Key="BrandSurfaceColor">#151A22</Color>
+        <Color x:Key="BrandSurfaceHeaderColor">#191F29</Color>
+        <Color x:Key="BrandSurfaceAltColor">#1E2532</Color>
+        <Color x:Key="BrandBorderColor">#283243</Color>
         <Color x:Key="BrandBorderFocusColor">#00AEEF</Color>
 
         <Color x:Key="BrandElectricCyanColor">#00AEEF</Color>
@@ -23,7 +23,7 @@
         <Color x:Key="BrandTitaniumColor">#7F8A96</Color>
         
         <Color x:Key="BrandTextPrimaryColor">#FFFFFF</Color>
-        <Color x:Key="BrandTextMutedColor">#94A3B8</Color>
+        <Color x:Key="BrandTextMutedColor">#8B9BB0</Color>
         <Color x:Key="BrandWarningColor">#F59E0B</Color>
         <Color x:Key="BrandSuccessColor">#10B981</Color>
         <Color x:Key="BrandErrorColor">#EF4444</Color>
@@ -51,37 +51,63 @@
     <Application.Styles>
         <FluentTheme />
         
-        <!-- Base Button Styles -->
+        <!-- Primary Action Button -->
         <Style Selector="Button.primary">
             <Setter Property="Background" Value="{StaticResource BrandElectricCyanBrush}" />
             <Setter Property="Foreground" Value="#091018" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="12" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="14,8" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
         <Style Selector="Button.primary:pointerover">
             <Setter Property="Background" Value="{StaticResource BrandElectricCyanHoverBrush}" />
         </Style>
 
+        <!-- Secondary Action Button -->
         <Style Selector="Button.secondary">
             <Setter Property="Background" Value="{StaticResource BrandSurfaceAltBrush}" />
             <Setter Property="Foreground" Value="{StaticResource BrandTextPrimaryBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource BrandBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="12" />
             <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="12,7" />
+            <Setter Property="Padding" Value="12,8" />
         </Style>
         <Style Selector="Button.secondary:pointerover">
-            <Setter Property="Background" Value="{StaticResource BrandBorderBrush}" />
+            <Setter Property="Background" Value="#252E3E" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandElectricCyanBrush}" />
         </Style>
 
+        <!-- Accent Lime Button -->
         <Style Selector="Button.accent">
             <Setter Property="Background" Value="{StaticResource BrandNeonLimeBrush}" />
-            <Setter Property="Foreground" Value="#0B1304" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#091204" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="12" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="14,8" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="#9CE821" />
+        </Style>
+
+        <!-- Top Navigation Bar Tab Button -->
+        <Style Selector="Button.nav-tab">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource BrandTextMutedBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.nav-tab:pointerover">
+            <Setter Property="Background" Value="{StaticResource BrandSurfaceAltBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource BrandTextPrimaryBrush}" />
         </Style>
 
         <!-- Card Container Style -->
@@ -89,20 +115,39 @@
             <Setter Property="Background" Value="{StaticResource BrandSurfaceBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource BrandBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="16" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="18" />
         </Style>
 
-        <!-- Section Header -->
+        <!-- Spec Data Pill -->
+        <Style Selector="Border.data-pill">
+            <Setter Property="Background" Value="#10141B" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,8" />
+        </Style>
+
+        <!-- Text Helpers -->
         <Style Selector="TextBlock.header">
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="{StaticResource BrandTextPrimaryBrush}" />
         </Style>
 
         <Style Selector="TextBlock.muted">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource BrandTextMutedBrush}" />
+        </Style>
+
+        <!-- Clean ComboBox Style -->
+        <Style Selector="ComboBox">
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Background" Value="{StaticResource BrandSurfaceAltBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BrandBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
     </Application.Styles>
 </Application>

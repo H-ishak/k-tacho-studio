@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:KTachoStudio.UI.ViewModels.Pages"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+             x:Class="KTachoStudio.UI.Views.Pages.OverviewView"
+             x:DataType="vm:OverviewViewModel">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="20">
+            
+            <!-- Summary Banner -->
+            <Border Classes="card">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="CONTROLLER STATUS &amp; IDENTIFICATION" Classes="header" FontSize="16" />
+                        <TextBlock Text="Automated module query over K-Line via KW1281 / KWP2000" Classes="muted" />
+                    </StackPanel>
+                    <Border Grid.Column="1" Background="#0C141C"
+                            BorderBrush="{StaticResource BrandElectricCyanBrush}" BorderThickness="1.5"
+                            CornerRadius="8" Padding="16,8" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Ellipse Width="8" Height="8" Fill="{StaticResource BrandElectricCyanBrush}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding SecurityAccessStatus}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Identified Controller Data Grid -->
+            <Grid ColumnDefinitions="*,*">
+                
+                <!-- Left: ECU Ident -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="Engine Control Module (Address 01)" Classes="header" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                        
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="140,*" Margin="0,4">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Part Number:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="0" Grid.Column="1" Classes="data-pill" Margin="0,3">
+                                <TextBlock Text="{Binding ControllerPartNumber}" FontWeight="Black" FontSize="13" />
+                            </Border>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Component:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="1" Grid.Column="1" Classes="data-pill" Margin="0,3">
+                                <TextBlock Text="{Binding ControllerComponent}" FontWeight="Bold" FontSize="12" />
+                            </Border>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Software Coding:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="2" Grid.Column="1" Classes="data-pill" Margin="0,3">
+                                <TextBlock Text="{Binding ControllerCoding}" FontWeight="Bold" />
+                            </Border>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Workshop Code:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="3" Grid.Column="1" Classes="data-pill" Margin="0,3">
+                                <TextBlock Text="{Binding ControllerWsc}" FontWeight="Bold" />
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right: Cluster & Security -->
+                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="Cluster &amp; Immobilizer Data (Address 17)" Classes="header" Foreground="{StaticResource BrandNeonLimeBrush}" />
+
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="140,*" Margin="0,4">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Vehicle VIN:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="0" Grid.Column="1" Classes="data-pill" Margin="0,3">
+                                <TextBlock Text="{Binding ControllerVin}" FontWeight="Black" FontSize="13" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                            </Border>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Immo Secret PIN:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="1" Grid.Column="1" Classes="data-pill" Background="#142010" BorderBrush="{StaticResource BrandNeonLimeBrush}" Margin="0,3">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding ClusterPin}" FontWeight="Black" FontSize="16" Foreground="{StaticResource BrandNeonLimeBrush}" VerticalAlignment="Center" />
+                                    <Button Grid.Column="1" Content="COPY PIN" Classes="accent" Padding="10,3" FontSize="10" />
+                                </Grid>
+                            </Border>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Cluster Odometer:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="2" Grid.Column="1" Classes="data-pill" Margin="0,3">
+                                <TextBlock Text="{Binding ClusterMileage}" FontWeight="Bold" FontSize="13" />
+                            </Border>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Immo Architecture:" Classes="muted" Margin="0,6" />
+                            <Border Grid.Row="3" Grid.Column="1" Classes="data-pill" Margin="0,3">
+                                <TextBlock Text="{Binding ImmoGeneration}" FontWeight="Bold" />
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Quick Action Tiles -->
+            <TextBlock Text="WORKBENCH SHORTCUTS" FontSize="12" FontWeight="Bold" LetterSpacing="1" Foreground="{StaticResource BrandTextMutedBrush}" />
+            <Grid ColumnDefinitions="*,*,*,*">
+                <Button Grid.Column="0" Command="{Binding ReadPinCommand}" Classes="secondary" Margin="0,0,8,0" Padding="16">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="🔑" FontSize="24" HorizontalAlignment="Center" />
+                        <TextBlock Text="Read SKC / PIN" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="Extract cluster login code" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="1" Classes="secondary" Margin="8,0,8,0" Padding="16">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="⚠️" FontSize="24" HorizontalAlignment="Center" />
+                        <TextBlock Text="Scan Fault Codes" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="Interrogate all modules" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="2" Classes="secondary" Margin="8,0,8,0" Padding="16">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="🪟" FontSize="24" HorizontalAlignment="Center" />
+                        <TextBlock Text="Window Roll-Up" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="1-click CCM coding" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="3" Classes="secondary" Margin="8,0,0,0" Padding="16">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="💾" FontSize="24" HorizontalAlignment="Center" />
+                        <TextBlock Text="Backup EEPROM" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="Full binary backup" FontSize="10" Classes="muted" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

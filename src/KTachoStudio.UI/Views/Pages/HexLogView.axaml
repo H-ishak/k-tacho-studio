@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:KTachoStudio.UI.ViewModels.Pages"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+             x:Class="KTachoStudio.UI.Views.Pages.HexLogView"
+             x:DataType="vm:HexLogViewModel">
+
+    <Grid Margin="24" ColumnDefinitions="*,*">
+        
+        <!-- Left: Raw Hex Viewer -->
+        <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+            <Grid RowDefinitions="Auto,*">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+                    <TextBlock Text="RAW HEX INSPECTOR (EEPROM / FLASH)" Classes="header" FontSize="12" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding LoadBinCommand}" Content="LOAD BIN" Classes="secondary" Padding="10,5" FontSize="11" />
+                        <Button Command="{Binding SaveBinCommand}" Content="SAVE BIN" Classes="secondary" Padding="10,5" FontSize="11" />
+                    </StackPanel>
+                </Grid>
+                <TextBox Grid.Row="1" 
+                         FontFamily="Courier New, Consolas, Monospace" 
+                         FontSize="11"
+                         Background="#070A0E"
+                         BorderBrush="{StaticResource BrandBorderBrush}"
+                         IsReadOnly="True"
+                         Text="{Binding HexDumpText}" />
+            </Grid>
+        </Border>
+
+        <!-- Right: Real-time K-Line Log -->
+        <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+            <Grid RowDefinitions="Auto,*">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+                    <TextBlock Text="REAL-TIME K-LINE PACKET LOG" Classes="header" FontSize="12" />
+                    <Button Command="{Binding ClearLogCommand}" Content="CLEAR" Classes="secondary" Padding="10,5" FontSize="11" />
+                </Grid>
+                <TextBox Grid.Row="1"
+                         FontFamily="Courier New, Consolas, Monospace"
+                         FontSize="11"
+                         Background="#070A0E"
+                         BorderBrush="{StaticResource BrandBorderBrush}"
+                         IsReadOnly="True"
+                         Text="{Binding KlineLogText}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

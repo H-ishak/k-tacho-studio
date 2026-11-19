@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:KTachoStudio.UI.ViewModels.Pages"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+             x:Class="KTachoStudio.UI.Views.Pages.ComfortModulesView"
+             x:DataType="vm:ComfortModulesViewModel">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="20">
+            
+            <Border Classes="card">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="AUXILIARY MODULES &amp; COMFORT CODING" Classes="header" FontSize="16" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                    <TextBlock Text="Comfort Control Module (CCM), Airbag crash reset, and Radio SAFE code recovery" Classes="muted" />
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*">
+                
+                <!-- CCM Convenience Features -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="Comfort Control Module (Address 46 - 1J0 / 1C0)" Classes="header" />
+                        
+                        <CheckBox Content="Enable Remote Window Roll-Up / Roll-Down" 
+                                  IsChecked="{Binding WindowRollUpEnabled}" />
+                        <CheckBox Content="Alarm Siren Chirp on Lock / Unlock" 
+                                  IsChecked="{Binding AlarmChirpEnabled}" />
+                        <CheckBox Content="Auto-Lock at 15 km/h &amp; Auto-Unlock on Key Pull" 
+                                  IsChecked="{Binding AutoLockEnabled}" />
+                        <CheckBox Content="Selective Unlocking (Driver Door First)" 
+                                  IsChecked="{Binding SelectiveUnlock}" />
+
+                        <Grid ColumnDefinitions="*,*" Margin="0,12,0,0">
+                            <Button Grid.Column="0" Command="{Binding ReadCcmCommand}" Content="READ CCM EEPROM" Classes="secondary" Margin="0,0,6,0" Padding="12" />
+                            <Button Grid.Column="1" Command="{Binding ApplyCcmCommand}" Content="APPLY TO CCM" Classes="primary" Margin="6,0,0,0" Padding="12" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Airbag & Radio Codes -->
+                <StackPanel Grid.Column="1" Spacing="18" Margin="10,0,0,0">
+                    
+                    <!-- Airbag Card -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Airbag Controller (Address 15 - VW51)" Classes="header" />
+                            <TextBlock Text="Safe CR16 memory dump and soft crash data clearing" Classes="muted" />
+                            <Grid ColumnDefinitions="*,*">
+                                <Button Grid.Column="0" Command="{Binding ClearAirbagCrashCommand}" Content="CLEAR CRASH DATA" Classes="secondary" Margin="0,0,6,0" Padding="12" />
+                                <Button Grid.Column="1" Content="DUMP CR16 BIN" Classes="secondary" Margin="6,0,0,0" Padding="12" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Radio Safe Code Card -->
+                    <Border Classes="card">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Radio SAFE Code Recovery (Address 56)" Classes="header" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel>
+                                    <TextBlock Text="EXTRACTED SAFE CODE:" Classes="muted" FontSize="10" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding RadioSafeCode}" FontSize="24" FontWeight="Black" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Command="{Binding RetrieveRadioCodeCommand}" Content="RETRIEVE CODE" Classes="primary" VerticalAlignment="Center" Padding="14,10" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

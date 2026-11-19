@@ -4,7 +4,16 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>KTachoStudio.Core</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Compile upstream kw1281test source files as-is from submodule without any modifications to upstream -->
+    <Compile Include="..\..\external\kw1281test\**\*.cs" 
+             Exclude="..\..\external\kw1281test\Program.cs;..\..\external\kw1281test\Tests\**;..\..\external\kw1281test\GitHub\**;..\..\external\kw1281test\bin\**;..\..\external\kw1281test\obj\**" />
+    <EmbeddedResource Include="..\..\external\kw1281test\EDC15\*.bin" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.Ports" Version="9.0.0" />

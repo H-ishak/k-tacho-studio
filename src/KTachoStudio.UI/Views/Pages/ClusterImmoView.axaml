@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:KTachoStudio.UI.ViewModels.Pages"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
+             x:Class="KTachoStudio.UI.Views.Pages.ClusterImmoView"
+             x:DataType="vm:ClusterImmoViewModel">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="20">
+            
+            <Border Classes="card">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="INSTRUMENT CLUSTER &amp; IMMOBILIZER ADAPTATION (ADDRESS 17)" Classes="header" FontSize="16" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                        <TextBlock Text="EEPROM read/write, PIN extraction, odometer recalibration, and Channel 50 pairing" Classes="muted" />
+                    </StackPanel>
+                    <Border Grid.Column="1" Background="#0C141C" BorderBrush="{StaticResource BrandElectricCyanBrush}" BorderThickness="1.5" CornerRadius="8" Padding="14,8">
+                        <TextBlock Text="{Binding ClusterType}" FontWeight="Black" FontSize="12" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*">
+                
+                <!-- Security Card -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="Extracted Security &amp; Odometer" Classes="header" />
+                        
+                        <Border Background="#0C121A" CornerRadius="10" Padding="18" BorderBrush="{StaticResource BrandNeonLimeBrush}" BorderThickness="1.5">
+                            <Grid ColumnDefinitions="*,*">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="LOGIN / PIN CODE" Classes="muted" FontSize="10" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding ClusterPin}" FontSize="28" FontWeight="Black" Foreground="{StaticResource BrandNeonLimeBrush}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="ODOMETER READING" Classes="muted" FontSize="10" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding ClusterMileage}" FontSize="28" FontWeight="Black" Foreground="{StaticResource BrandElectricCyanBrush}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+                            <Button Grid.Column="0" Command="{Binding DumpEepromCommand}" Content="DUMP EEPROM" Classes="primary" Margin="0,0,6,0" Padding="14" />
+                            <Button Grid.Column="1" Command="{Binding WriteEepromCommand}" Content="WRITE EEPROM" Classes="secondary" Margin="6,0,0,0" Padding="14" />
+                        </Grid>
+                        <Button Content="DUMP VDO NEC ROM (FIS DISPLAY 0x10000)" Classes="secondary" HorizontalAlignment="Stretch" Padding="12" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Adaptation Wizard -->
+                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="Immobilizer 3 Adaptation Assistant" Classes="header" />
+                        <TextBlock Text="Match replacement cluster to ECU using the Channel 50 login procedure" Classes="muted" />
+
+                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="140,*" Margin="0,8">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Cluster Old PIN:" Classes="muted" VerticalAlignment="Center" Margin="0,8" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ClusterPin}" Height="36" Margin="0,6" Background="#0F141C" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Target ECU PIN:" Classes="muted" VerticalAlignment="Center" Margin="0,8" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TargetClusterPin}" Height="36" Margin="0,6" Background="#0F141C" />
+                        </Grid>
+
+                        <Button Command="{Binding StartAdaptationCommand}" Content="START CHANNEL 50 ADAPTATION" Classes="accent" HorizontalAlignment="Stretch" Padding="14" />
+                        <Button Content="RESET TO FACTORY (CHANNEL 00)" Classes="secondary" HorizontalAlignment="Stretch" Padding="12" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
